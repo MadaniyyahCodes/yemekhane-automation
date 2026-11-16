@@ -23,3 +23,65 @@ mysql: [Warning] Using a password on the command line interface can be insecure.
         Relay_Source_Log_File: mysql-bin.000003
            Replica_IO_Running: Yes
           Replica_SQL_Running: Yes
+
+
+
+PS C:\Users\HP\Downloads\yemekhane-baslangic> docker compose exec mysql-primary mysql -uyemekhane_app -pUyg_2026 yemekhane -e "CALL sp_bakiye_yukle(7, 100)"
+mysql: [Warning] Using a password on the command line interface can be insecure.
++------------+--------+
+| hareket_id | bakiye |
++------------+--------+
+|        455 | 455.00 |
++------------+--------+
+PS C:\Users\HP\Downloads\yemekhane-baslangic> docker compose exec mysql-replica mysql -uyemekhane_app -pUyg_2026 yemekhane -e "SELECT id, bakiye FROM kullanicilar WHERE id = 7"
+mysql: [Warning] Using a password on the command line interface can be insecure.
++----+--------+
+| id | bakiye |
++----+--------+
+|  7 | 455.00 |
++----+--------+
+PS C:\Users\HP\Downloads\yemekhane-baslangic> 
+
+
+PS C:\Users\HP\Downloads\yemekhane-baslangic> docker compose exec mysql-replica mysql -uyemekhane_app -pUyg_2026 yemekhane -e "CALL sp_bakiye_yukle(7, 50)"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1290 (HY000) at line 1: The MySQL server is running with the --super-read-only option so it cannot execute this statement
+
+What's next:
+    Debug this Compose error with Gordon → docker ai "help me fix this compose error"
+PS C:\Users\HP\Downloads\yemekhane-baslangic> 
+
+
+PS C:\Users\HP\Downloads\yemekhane-baslangic> docker compose stop mysql-replica
+[+] stop 1/1
+ ✔ Container yemekhane-mysql-replica-1 Stopped                               1.3s
+PS C:\Users\HP\Downloads\yemekhane-baslangic> docker compose exec mysql-primary mysql -uyemekhane_app -pUyg_2026 yemekhane -e "CALL sp_bakiye_yukle(7, 200)"
+mysql: [Warning] Using a password on the command line interface can be insecure.
++------------+--------+
+| hareket_id | bakiye |
++------------+--------+
+|        456 | 655.00 |
++------------+--------+
+PS C:\Users\HP\Downloads\yemekhane-baslangic> docker compose start mysql-replica
+[+] start 1/1
+ ✔ Container yemekhane-mysql-replica-1 Started                               0.1s
+PS C:\Users\HP\Downloads\yemekhane-baslangic> docker compose ps -a
+NAME                        IMAGE                COMMAND                  SERVICE         CREATED          STATUS                      PORTS
+yemekhane-frontend-1        yemekhane-frontend   "httpd-foreground -D…"   frontend        23 minutes ago   Up 23 minutes (healthy)     0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+yemekhane-mysql-primary-1   mysql:8.4            "docker-entrypoint.s…"   mysql-primary   23 minutes ago   Up 23 minutes (healthy)     0.0.0.0:3307->3306/tcp, [::]:3307->3306/tcp
+yemekhane-mysql-replica-1   mysql:8.4            "docker-entrypoint.s…"   mysql-replica   23 minutes ago   Up 44 seconds (healthy)     0.0.0.0:3308->3306/tcp, [::]:3308->3306/tcp
+yemekhane-redis-1           redis:7.4-alpine     "docker-entrypoint.s…"   redis           23 minutes ago   Up 23 minutes (healthy)     0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp
+yemekhane-replica-setup-1   mysql:8.4            "bash /replica-setup…"   replica-setup   23 minutes ago   Exited (0) 22 minutes ago   
+PS C:\Users\HP\Downloads\yemekhane-baslangic> docker compose exec mysql-replica mysql -uyemekhane_app -pUyg_2026 yemekhane -e "SELECT id, bakiye FROM kullanicilar WHERE id = 7"
+mysql: [Warning] Using a password on the command line interface can be insecure.
++----+--------+
+| id | bakiye |
++----+--------+
+|  7 | 655.00 |
++----+--------+
+PS C:\Users\HP\Downloads\yemekhane-baslangic> 
+
+
+PS C:\Users\HP\Downloads\yemekhane-baslangic> docker compose exec redis redis-cli ping
+PONG
+PS C:\Users\HP\Downloads\yemekhane-baslangic> 
