@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ana sayfa · Yemekhane</title>
+  <link rel="stylesheet" href="/css/temel.css">
+  <link rel="stylesheet" href="/css/uygulama.css">
+</head>
+<body>
+  <%- include('partials/ust') %>
+  <main class="kutu">
+    <h1>Merhaba, <%= kullanici.ad %></h1>
+    <p>Rolünüz: <%= kullanici.rol %></p>
+  </main>
+</body>
+</html>

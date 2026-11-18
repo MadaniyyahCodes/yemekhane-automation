@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bakiye · Yemekhane</title>
+  <link rel="stylesheet" href="/css/temel.css">
+  <link rel="stylesheet" href="/css/uygulama.css">
+</head>
+<body>
+  <%- include('partials/ust') %>
+  <main class="kutu genis">
+    <h1>Bakiye</h1>
+    <p>Güncel bakiye: <strong><%= Number(bakiye).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) %> TL</strong></p>
+
+    <% if (hata) { %><p class="hata"><%= hata %></p><% } %>
+    <% if (basari) { %><p class="basari"><%= basari %></p><% } %>
+
+    <form method="post" action="/bakiye/yukle">
+      <label for="tutar">Yüklenecek tutar (TL)</label>
+      <input id="tutar" name="tutar" type="text" inputmode="decimal" required>
+      <button type="submit">Bakiye yükle</button>
+    </form>
+
+    <h2>Hareket geçmişi</h2>
+    <% if (hareketler.length === 0) { %>
+      <p>Henüz hareket yok.</p>
+    <% } else { %>
+      <div class="tablo-kap">
+        <table>
+          <thead><tr><th>Tarih</th><th>Tür</th><th class="sag">Tutar</th></tr></thead>
+          <tbody>
+            <% hareketler.forEach(function (h) { %>
+              <tr>
+                <td><%= h.zaman %></td>
+                <td><%= h.tur %></td>
+                <td class="sag"><%= Number(h.tutar) > 0 ? '+' : '' %><%= Number(h.tutar).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </main>
+</body>
+</html>

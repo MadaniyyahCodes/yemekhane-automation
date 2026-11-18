@@ -1,14 +1,24 @@
+const path = require('path');
 const express = require('express');
+const cookieParser = require('cookie-parser');
+const { oturumYukle } = require('./middleware/oturum');
+const authRoutes = require('./routes/authRoutes');
+const anasayfaRoutes = require('./routes/anasayfaRoutes');
+const bakiyeRoutes = require('./routes/bakiyeRoutes');
 const sistemRoutes = require('./routes/sistemRoutes');
 
 const app = express();
 
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
 app.use(express.urlencoded({ extended: false })); // reads HTML form data
+app.use(cookieParser());
+app.use(oturumYukle); // loads the Redis session on every request
 
-app.get('/', (req, res) => {
-  res.send('Yemekhane uygulaması çalışıyor');
-});
-
+app.use('/', authRoutes);
+app.use('/', anasayfaRoutes);
+app.use('/', bakiyeRoutes);
 app.use('/', sistemRoutes);
 
 // Any error thrown inside a route ends up here
