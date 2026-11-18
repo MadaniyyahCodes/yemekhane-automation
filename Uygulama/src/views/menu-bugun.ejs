@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Günün menüsü · Yemekhane</title>
+  <link rel="stylesheet" href="/css/temel.css">
+  <link rel="stylesheet" href="/css/uygulama.css">
+</head>
+<body>
+  <%- include('partials/ust') %>
+  <main class="kutu genis">
+    <h1>Günün menüsü</h1>
+    <p><%= tarih %></p>
+
+    <form method="get" action="/menu/bugun" class="secim">
+      <input type="hidden" name="tarih" value="<%= tarih %>">
+      <div>
+        <label for="yemekhane">Yemekhane</label>
+        <select id="yemekhane" name="yemekhane">
+          <% yemekhaneler.forEach(function (y) { %>
+            <option value="<%= y.id %>" <%= Number(y.id) === yemekhaneId ? 'selected' : '' %>><%= y.ad %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div>
+        <label for="ogun">Öğün</label>
+        <select id="ogun" name="ogun">
+          <% ogunler.forEach(function (o) { %>
+            <option value="<%= o.id %>" <%= Number(o.id) === ogunId ? 'selected' : '' %>><%= o.ad %></option>
+          <% }); %>
+        </select>
+      </div>
+      <button type="submit">Göster</button>
+    </form>
+
+    <% if (!menu) { %>
+      <p>Bu yemekhane ve öğün için menü yok.</p>
+    <% } else { %>
+      <h2><%= menu.yemekhane %> · <%= menu.ogun %></h2>
+      <% if (menu.sonSaat) { %><p>Rezervasyon son saati: <strong><%= menu.sonSaat %></strong></p><% } %>
+
+      <% menu.kategoriler.forEach(function (kat) { %>
+        <h3><%= kat.ad %></h3>
+        <ul class="yemekler">
+          <% kat.yemekler.forEach(function (y) { %>
+            <li>
+              <span class="yemek-ad"><%= y.yemek %></span>
+              <% if (y.kalori !== null) { %><span class="kalori"><%= y.kalori %> kcal</span><% } %>
+              <% if (y.vejetaryen) { %><span class="etiket vej">Vejetaryen</span><% } %>
+              <% if (y.alerjenler) { %><span class="etiket alerjen">Alerjen: <%= y.alerjenler %></span><% } %>
+            </li>
+          <% }); %>
+        </ul>
+      <% }); %>
+
+      <p class="toplam">Toplam kalori: <%= menu.toplamKalori %> kcal</p>
+    <% } %>
+  </main>
+</body>
+</html>

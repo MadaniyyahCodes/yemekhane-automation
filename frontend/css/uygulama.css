@@ -16,3 +16,15 @@ button.ikincil { margin: 0; background: #5b6b66; }
 table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; padding: 8px; border-bottom: 1px solid #d5dbd8; white-space: nowrap; }
 .sag { text-align: right; }
+.secim { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+.secim div { flex: 1 1 160px; }
+.secim button { margin-top: 0; }
+select { width: 100%; box-sizing: border-box; padding: 10px; margin-top: 4px; font-size: 16px; }
+.yemekler { list-style: none; padding: 0; margin: 0; }
+.yemekler li { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid #d5dbd8; }
+.yemek-ad { font-weight: 600; flex: 1 1 100%; }
+.kalori { color: #5b6b66; }
+.etiket { font-size: 13px; padding: 2px 8px; border-radius: 999px; }
+.etiket.vej { background: #e3f1e7; color: #1e6b3c; }
+.etiket.alerjen { background: #fff1d6; color: #8a5a00; }
+.toplam { font-weight: 700; margin-top: 16px; }

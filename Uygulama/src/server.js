@@ -5,6 +5,7 @@ const { oturumYukle } = require('./middleware/oturum');
 const authRoutes = require('./routes/authRoutes');
 const anasayfaRoutes = require('./routes/anasayfaRoutes');
 const bakiyeRoutes = require('./routes/bakiyeRoutes');
+const menuRoutes = require('./routes/menuRoutes');
 const sistemRoutes = require('./routes/sistemRoutes');
 
 const app = express();
@@ -19,6 +20,7 @@ app.use(oturumYukle); // loads the Redis session on every request
 app.use('/', authRoutes);
 app.use('/', anasayfaRoutes);
 app.use('/', bakiyeRoutes);
+app.use('/', menuRoutes);
 app.use('/', sistemRoutes);
 
 // Any error thrown inside a route ends up here
