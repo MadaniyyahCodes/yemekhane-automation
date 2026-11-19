@@ -36,3 +36,6 @@ select { width: 100%; box-sizing: border-box; padding: 10px; margin-top: 4px; fo
 .kart-bilgi { color: #3b4a46; }
 button:disabled { background: #9aa5a1; color: #ffffff;
   opacity: 0.85; cursor: not-allowed; }
+  .etiket.iptal { background: #fde8e6; color: #b3261e; }
+.etiket.gri { background: #e6e9e8; color: #3b4a46; }
+.kart form { margin-top: 8px; }
