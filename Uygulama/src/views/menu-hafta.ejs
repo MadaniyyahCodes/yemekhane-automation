@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Haftalık menü · Yemekhane</title>
+  <link rel="stylesheet" href="/css/temel.css">
+  <link rel="stylesheet" href="/css/uygulama.css">
+</head>
+<body>
+  <%- include('partials/ust') %>
+  <main class="kutu genis">
+    <h1>Haftalık menü ve rezervasyon</h1>
+    <p>Güncel bakiye: <strong><%= Number(bakiye).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) %> TL</strong></p>
+
+    <% if (hata) { %><p class="hata"><%= hata %></p><% } %>
+    <% if (basari) { %><p class="basari"><%= basari %></p><% } %>
+
+    <p class="gezinti">
+      <a href="/menu/hafta?baslangic=<%= onceki %>">← Önceki hafta</a>
+      <a href="/menu/hafta?baslangic=<%= sonraki %>">Sonraki hafta →</a>
+    </p>
+
+    <% if (gunler.length === 0) { %>
+      <p>Bu hafta için menü yok.</p>
+    <% } %>
+
+    <% gunler.forEach(function (gun) { %>
+      <h2 class="gun"><%= gun.ad %></h2>
+      <% gun.menuler.forEach(function (m) { %>
+        <article class="kart">
+          <div><strong><%= m.yemekhane %></strong> · <%= m.ogun %></div>
+          <p class="kart-bilgi">
+            Fiyat: <strong><%= Number(m.fiyat).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) %> TL</strong>
+            · Boş yer: <strong><%= m.bos_yer %></strong> / <%= m.kapasite %>
+            <% if (m.sonSaat) { %>· Son saat: <%= m.sonSaat %><% } %>
+          </p>
+          <p class="kart-bilgi">
+            <a href="/menu/bugun?tarih=<%= m.tarih %>&yemekhane=<%= m.yemekhane_id %>&ogun=<%= m.ogun_id %>">Menüyü gör</a>
+          </p>
+
+          <% if (m.durumEtiketi) { %>
+            <span class="etiket vej"><%= m.durumEtiketi %></span>
+          <% } else if (m.suresi_doldu) { %>
+            <button type="button" disabled>Süre doldu</button>
+          <% } else if (Number(m.bos_yer) <= 0) { %>
+            <button type="button" disabled>Dolu</button>
+          <% } else { %>
+            <form method="post" action="/rezervasyon/yap">
+              <input type="hidden" name="menu_id" value="<%= m.menu_id %>">
+              <input type="hidden" name="baslangic" value="<%= baslangic %>">
+              <button type="submit">Rezervasyon yap</button>
+            </form>
+          <% } %>
+        </article>
+      <% }); %>
+    <% }); %>
+  </main>
+</body>
+</html>

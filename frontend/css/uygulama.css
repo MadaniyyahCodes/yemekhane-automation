@@ -28,3 +28,11 @@ select { width: 100%; box-sizing: border-box; padding: 10px; margin-top: 4px; fo
 .etiket.vej { background: #e3f1e7; color: #1e6b3c; }
 .etiket.alerjen { background: #fff1d6; color: #8a5a00; }
 .toplam { font-weight: 700; margin-top: 16px; }
+.gezinti { display: flex; justify-content: space-between; gap: 12px; }
+.gezinti a, .kart a { color: #2f6f4f; font-weight: 600; }
+.gun { margin: 24px 0 8px; text-transform: capitalize; }
+.kart { border: 1px solid #d5dbd8; border-radius: 10px; padding: 12px; margin-bottom: 10px; }
+.kart p { margin: 6px 0; }
+.kart-bilgi { color: #3b4a46; }
+button:disabled { background: #9aa5a1; color: #ffffff;
+  opacity: 0.85; cursor: not-allowed; }
