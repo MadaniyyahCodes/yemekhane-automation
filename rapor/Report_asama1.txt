@@ -85,3 +85,7 @@ PS C:\Users\HP\Downloads\yemekhane-baslangic>
 PS C:\Users\HP\Downloads\yemekhane-baslangic> docker compose exec redis redis-cli ping
 PONG
 PS C:\Users\HP\Downloads\yemekhane-baslangic> 
+
+For the report
+
+This screen shows the rule from the assignment in a second place: the list normally comes from the replica, but right after a cancel it’s read from the primary, and the balance is always read from the primary.

@@ -1,0 +1,19 @@
+## Aşama 2
+### İsteğin uygulama içindeki yolu
+### Okuma/yazma ayrımı ve replikasyon gecikmesi
+### Ekranlar (7)
+
+Replication between the primary and the replica is asynchronous: a change committed on the 
+primary reaches the replica a moment later. If the balance shown right after a top-up or 
+reservation were read from the replica, the user could briefly see the old value. For this 
+reason, writes go to the primary, the current balance is always read from the primary, and 
+after a write the “my reservations” list is also read from the primary. Ordinary lists and reports 
+(menus, history, availability) are read from the replica, which takes load off the primary.
+
+Request path, one example (replace with your own wording if you like):
+
+Top-up: POST /bakiye/yukle → routes/bakiyeRoutes.js → controllers/bakiyeController.js (yukle) 
+→ repositories/bakiyeRepository.js (yukle, which runs CALL sp_bakiye_yukle(?, ?) on the 
+primary) → redirect to /bakiye with a success message. If the procedure raises SQLSTATE 45000,
+ the controller shows its Turkish message on the page. The controller contains no SQL and 
+ the view contains no business rules.
