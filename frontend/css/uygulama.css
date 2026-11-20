@@ -41,3 +41,18 @@ button:disabled { background: #9aa5a1; color: #ffffff;
 .kart form { margin-top: 8px; }
 textarea { width: 100%; box-sizing: border-box; padding: 10px; margin-top: 4px; font-size: 16px; font-family: inherit; }
 .yildiz { color: #b7791f; font-size: 20px; margin: 6px 0; }
+.kutu.cok-genis { max-width: 960px; }
+.dugme { display: inline-block; padding: 10px 16px; border-radius: 8px; background: #2f6f4f; color: #fff; text-decoration: none; font-weight: 600; }
+.dugme.ikincil-dugme { background: #5b6b66; margin-left: 8px; }
+input[type="checkbox"] { width: auto; margin: 0 10px 0 0; }
+label.onay { display: flex; align-items: center; margin-top: 6px; font-weight: 400; }
+.ust { flex-wrap: wrap; gap: 8px 16px; }
+.menu { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.menu a { white-space: nowrap; }
+
+@media (max-width: 700px) {
+  .ust strong { order: 1; }
+  .ust form { order: 2; }
+  .menu { order: 3; flex: 1 1 100%; }
+  .menu a { font-size: 15px; }
+}

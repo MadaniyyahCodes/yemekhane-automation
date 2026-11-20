@@ -17,4 +17,12 @@ function girisGerekli(req, res, next) {
   next();
 }
 
-module.exports = { oturumYukle, girisGerekli };
+function yoneticiGerekli(req, res, next) {
+  if (!req.kullanici) return res.redirect('/giris');
+  if (req.kullanici.rol !== 'yonetici') {
+    return res.status(403).send('Bu sayfaya erişim yetkiniz yok.');
+  }
+  next();
+}
+
+module.exports = { oturumYukle, girisGerekli, yoneticiGerekli };

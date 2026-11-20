@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Menü formu · Yemekhane</title>
+  <link rel="stylesheet" href="/css/temel.css">
+  <link rel="stylesheet" href="/css/uygulama.css">
+</head>
+<body>
+  <%- include('partials/ust') %>
+  <main class="kutu genis">
+    <h1><%= duzenleme ? 'Menüyü düzenle' : 'Yeni menü' %></h1>
+
+    <% if (hata) { %><p class="hata"><%= hata %></p><% } %>
+
+    <form method="post" action="<%= duzenleme ? '/yonetici/menu/' + menu.id + '/duzenle' : '/yonetici/menu/yeni' %>">
+
+      <% if (duzenleme) { %>
+        <p><strong><%= menu.yemekhaneAd %></strong> · <%= menu.ogunAd %> · <%= menu.tarih %></p>
+        <p class="kart-bilgi">Yemekhane, tarih ve öğün değiştirilemez; yalnızca fiyatlar ve yemekler düzenlenir.</p>
+      <% } else { %>
+        <label for="yemekhane_id">Yemekhane</label>
+        <select id="yemekhane_id" name="yemekhane_id">
+          <% yemekhaneler.forEach(function (y) { %>
+            <option value="<%= y.id %>" <%= Number(y.id) === menu.yemekhaneId ? 'selected' : '' %>><%= y.ad %></option>
+          <% }); %>
+        </select>
+
+        <label for="tarih">Tarih</label>
+        <input id="tarih" name="tarih" type="date" value="<%= menu.tarih %>" required>
+
+        <label for="ogun_id">Öğün</label>
+        <select id="ogun_id" name="ogun_id">
+          <% ogunler.forEach(function (o) { %>
+            <option value="<%= o.id %>" <%= Number(o.id) === menu.ogunId ? 'selected' : '' %>><%= o.ad %></option>
+          <% }); %>
+        </select>
+      <% } %>
+
+      <label for="ogrenci_fiyati">Öğrenci fiyatı (TL)</label>
+      <input id="ogrenci_fiyati" name="ogrenci_fiyati" type="text" inputmode="decimal" value="<%= menu.ogrenciHam %>" required>
+
+      <label for="personel_fiyati">Personel fiyatı (TL)</label>
+      <input id="personel_fiyati" name="personel_fiyati" type="text" inputmode="decimal" value="<%= menu.personelHam %>" required>
+
+      <h2>Yemekler</h2>
+      <% kategoriler.forEach(function (kat) { %>
+        <h3><%= kat.ad %></h3>
+        <% kat.yemekler.forEach(function (y) { %>
+          <label class="onay">
+            <input type="checkbox" name="yemekler" value="<%= y.id %>" <%= menu.yemekIdleri.includes(Number(y.id)) ? 'checked' : '' %>>
+            <span><%= y.ad %> <span class="kalori"><%= y.kalori %> kcal</span></span>
+          </label>
+        <% }); %>
+      <% }); %>
+
+      <p>
+        <button type="submit">Kaydet</button>
+        <a class="dugme ikincil-dugme" href="/yonetici">Vazgeç</a>
+      </p>
+    </form>
+  </main>
+</body>
+</html>

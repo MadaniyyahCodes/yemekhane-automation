@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Yönetici paneli · Yemekhane</title>
+  <link rel="stylesheet" href="/css/temel.css">
+  <link rel="stylesheet" href="/css/uygulama.css">
+</head>
+<body>
+  <%- include('partials/ust') %>
+  <main class="kutu cok-genis">
+    <h1>Yönetici paneli</h1>
+    <p><a class="dugme" href="/yonetici/menu/yeni">+ Yeni menü</a></p>
+
+    <% if (basari) { %><p class="basari"><%= basari %></p><% } %>
+
+    <p class="gezinti">
+      <a href="/yonetici?baslangic=<%= onceki %>">← Önceki dönem</a>
+      <span><%= baslangic %> – <%= bitis %></span>
+      <a href="/yonetici?baslangic=<%= sonraki %>">Sonraki dönem →</a>
+    </p>
+
+    <% if (menuler.length === 0) { %>
+      <p>Bu dönemde menü yok.</p>
+    <% } else { %>
+      <div class="tablo-kap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tarih</th><th>Yemekhane</th><th>Öğün</th>
+              <th>Doluluk</th><th>Ort. puan</th><th>Fiyat (öğr. / pers.)</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% menuler.forEach(function (m) { %>
+              <tr>
+                <td><%= m.tarihAdi %></td>
+                <td><%= m.yemekhane %></td>
+                <td><%= m.ogun %></td>
+                <td><%= m.rezerve %> / <%= m.kapasite %> (%<%= Number(m.doluluk_yuzde || 0).toLocaleString('tr-TR', { maximumFractionDigits: 1 }) %>)</td>
+                <td>
+                  <% if (m.ortalama_puan === null || !m.oy_sayisi) { %>—<% } else { %>
+                    <%= Number(m.ortalama_puan).toFixed(1).replace('.', ',') %> (<%= m.oy_sayisi %> oy)
+                  <% } %>
+                </td>
+                <td><%= Number(m.ogrenci_fiyati).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) %> / <%= Number(m.personel_fiyati).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) %></td>
+                <td><a href="/yonetici/menu/<%= m.menu_id %>/duzenle">Düzenle</a></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </main>
+</body>
+</html>

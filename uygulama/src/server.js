@@ -8,6 +8,7 @@ const bakiyeRoutes = require('./routes/bakiyeRoutes');
 const menuRoutes = require('./routes/menuRoutes');
 const rezervasyonRoutes = require('./routes/rezervasyonRoutes');
 const degerlendirmeRoutes = require('./routes/degerlendirmeRoutes');
+const yoneticiRoutes = require('./routes/yoneticiRoutes');
 const sistemRoutes = require('./routes/sistemRoutes');
 
 const app = express();
@@ -25,6 +26,7 @@ app.use('/', bakiyeRoutes);
 app.use('/', menuRoutes);
 app.use('/', rezervasyonRoutes);
 app.use('/', degerlendirmeRoutes);
+app.use('/', yoneticiRoutes);
 app.use('/', sistemRoutes);
 
 // Any error thrown inside a route ends up here
