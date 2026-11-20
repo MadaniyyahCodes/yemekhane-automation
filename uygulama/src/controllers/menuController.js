@@ -1,4 +1,5 @@
 const menuRepository = require('../repositories/menuRepository');
+const menuService = require('../services/menuService');
 
 function tamSayi(deger, varsayilan) {
   const n = parseInt(deger, 10);
@@ -17,7 +18,8 @@ async function bugun(req, res, next) {
     const yemekhaneId = tamSayi(req.query.yemekhane, yemekhaneler[0].id);
     const ogunId = tamSayi(req.query.ogun, (ogunler[1] || ogunler[0]).id); // lunch by default
 
-    const satirlar = await menuRepository.menuDetay(yemekhaneId, tarih, ogunId);
+    // The menu comes through the cache layer (Redis first, then the database)
+    const satirlar = await menuService.menuGetir(yemekhaneId, tarih, ogunId);
     const yemekler = satirlar.filter((s) => s.yemek); // ignore a menu with no dishes
 
     let menu = null;

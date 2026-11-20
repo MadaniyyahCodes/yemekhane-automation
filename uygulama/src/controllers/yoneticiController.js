@@ -1,6 +1,7 @@
 const menuRepository = require('../repositories/menuRepository');
 const yoneticiRepository = require('../repositories/yoneticiRepository');
 const { gecerliTarih, gunEkle, gunAdi } = require('../utils/tarih');
+const menuService = require('../services/menuService');
 
 const MESAJLAR = {
   olustu: 'Menü oluşturuldu.',
@@ -124,6 +125,7 @@ async function olustur(req, res, next) {
     if (!hata) {
       try {
         await yoneticiRepository.menuOlustur(v);
+        await menuService.onbellegiTemizle(v.yemekhaneId, v.tarih, v.ogunId);
         return res.redirect('/yonetici?ok=olustu');
       } catch (err) {
         if (err.code === 'MENU_VAR' || err.code === 'ER_DUP_ENTRY') {
@@ -165,8 +167,7 @@ async function guncelle(req, res, next) {
 
     if (!hata) {
       await yoneticiRepository.menuGuncelle(id, v);
-      // Stage 3 note: this is where the Redis menu cache key for
-      // (kayit.yemekhane_id, kayit.tarih, kayit.ogun_id) will be deleted.
+      await menuService.onbellegiTemizle(kayit.yemekhane_id, kayit.tarih, kayit.ogun_id);
       return res.redirect('/yonetici?ok=guncellendi');
     }
 
