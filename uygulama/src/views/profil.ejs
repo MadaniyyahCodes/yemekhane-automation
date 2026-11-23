@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profil · Yemekhane</title>
+  <link rel="stylesheet" href="/css/temel.css">
+  <link rel="stylesheet" href="/css/uygulama.css">
+</head>
+<body>
+  <%- include('partials/ust') %>
+  <main class="kutu genis">
+    <h1>Profil</h1>
+    <p><strong><%= kullanici.ad %></strong> · <%= kullanici.eposta %> · <%= kullanici.rol %></p>
+
+    <h2>Alerjenlerim</h2>
+    <p>Seçtiğiniz alerjenleri içeren yemekler menüde uyarıyla gösterilir.</p>
+
+    <% if (basari) { %><p class="basari"><%= basari %></p><% } %>
+
+    <form method="post" action="/profil/alerjen">
+      <div class="alerjen-liste">
+        <% alerjenler.forEach(function (a) { %>
+          <label class="onay">
+            <input type="checkbox" name="alerjenler" value="<%= a.id %>" <%= secilen.includes(Number(a.id)) ? 'checked' : '' %>>
+            <span><%= a.ad %></span>
+          </label>
+        <% }); %>
+      </div>
+      <button type="submit">Kaydet</button>
+    </form>
+  </main>
+</body>
+</html>

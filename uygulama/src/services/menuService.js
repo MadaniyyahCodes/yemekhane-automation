@@ -1,6 +1,10 @@
 const menuRepository = require('../repositories/menuRepository');
 const menuOnbellek = require('../repositories/menuOnbellekRepository');
 
+// Raise this number whenever the structure of cached menus changes
+// (Stage 4 changed the data model, so the version is now 4).
+const ONBELLEK_SURUMU = 4;
+
 // Cache-aside: look in Redis first, otherwise read the database and fill Redis.
 async function menuGetir(yemekhaneId, tarih, ogunId) {
   const anahtar = menuOnbellek.anahtar(yemekhaneId, tarih, ogunId);
@@ -46,4 +50,14 @@ async function onbellegiTemizle(yemekhaneId, tarih, ogunId) {
   }, 2000);
 }
 
-module.exports = { menuGetir, onbellegiTemizle };
+// Runs once when the app starts: removes old-structure menu records from Redis.
+async function onbellekSurumunuUygula() {
+  const sonuc = await menuOnbellek.surumuUygula(ONBELLEK_SURUMU);
+  if (sonuc.degisti) {
+    console.log(`[onbellek] surum ${ONBELLEK_SURUMU}: eski menu kayitlari temizlendi (${sonuc.silinen} anahtar)`);
+  } else {
+    console.log(`[onbellek] surum ${ONBELLEK_SURUMU} guncel, temizlik gerekmedi`);
+  }
+}
+
+module.exports = { menuGetir, onbellegiTemizle, onbellekSurumunuUygula };

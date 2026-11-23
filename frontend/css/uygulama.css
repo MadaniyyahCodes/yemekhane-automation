@@ -56,3 +56,9 @@ label.onay { display: flex; align-items: center; margin-top: 6px; font-weight: 4
   .menu { order: 3; flex: 1 1 100%; }
   .menu a { font-size: 15px; }
 }
+
+input[type="radio"] { width: auto; margin: 0 10px 0 0; }
+.alerjen-liste { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 4px 16px; }
+.etiket.uyari { background: #fde8e6; color: #b3261e; font-weight: 600; }
+.yemekler li.uyarili { background: #fff8f7; }
+.uyari-kutu { background: #fff1d6; color: #8a5a00; padding: 10px; border-radius: 8px; font-weight: 600; }

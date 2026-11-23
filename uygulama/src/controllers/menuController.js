@@ -1,4 +1,5 @@
 const menuRepository = require('../repositories/menuRepository');
+const alerjenRepository = require('../repositories/alerjenRepository');
 const menuService = require('../services/menuService');
 
 function tamSayi(deger, varsayilan) {
@@ -20,7 +21,20 @@ async function bugun(req, res, next) {
 
     // The menu comes through the cache layer (Redis first, then the database)
     const satirlar = await menuService.menuGetir(yemekhaneId, tarih, ogunId);
-    const yemekler = satirlar.filter((s) => s.yemek); // ignore a menu with no dishes
+    const kullaniciAlerjenleri = await alerjenRepository.kullaniciAlerjenleri(req.kullanici.id);
+
+    // Mark the dishes that contain an allergen this user selected
+    const yemekler = satirlar
+      .filter((s) => s.yemek) // ignore a menu with no dishes
+      .map((y) => {
+        const idler = new Set(
+          (y.alerjen_idler || '').split(',').map((s) => parseInt(s, 10)).filter(Number.isInteger)
+        );
+        const uyari = kullaniciAlerjenleri
+          .filter((a) => idler.has(Number(a.id)))
+          .map((a) => a.ad);
+        return { ...y, uyari };
+      });
 
     let menu = null;
     if (satirlar.length > 0) {
@@ -43,11 +57,15 @@ async function bugun(req, res, next) {
         ogun: satirlar[0].ogun,
         sonSaat: satirlar[0].rezervasyon_son ? satirlar[0].rezervasyon_son.slice(11, 16) : null,
         toplamKalori,
+        uyariSayisi: yemekler.filter((y) => y.uyari.length > 0).length,
         kategoriler,
       };
     }
 
-    res.render('menu-bugun', { tarih, yemekhaneler, ogunler, yemekhaneId, ogunId, menu });
+    res.render('menu-bugun', {
+      tarih, yemekhaneler, ogunler, yemekhaneId, ogunId, menu,
+      alerjenSecili: kullaniciAlerjenleri.length > 0,
+    });
   } catch (err) {
     next(err);
   }

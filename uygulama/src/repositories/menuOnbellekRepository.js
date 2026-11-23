@@ -1,6 +1,7 @@
 const redis = require('../config/redis');
 
 const anahtar = (yemekhaneId, tarih, ogunId) => `menu:${yemekhaneId}:${tarih}:${ogunId}`;
+const SURUM_ANAHTARI = 'onbellek:surum';
 
 // Seconds until the end of the menu's date (Istanbul time); never less than 60
 function sonaKadarSaniye(tarih) {
@@ -24,4 +25,17 @@ async function sil(yemekhaneId, tarih, ogunId) {
   await redis.del(anahtar(yemekhaneId, tarih, ogunId));
 }
 
-module.exports = { anahtar, getir, yaz, sil };
+// When the cache version changes, every cached menu is deleted with SCAN (never KEYS).
+async function surumuUygula(surum) {
+  const mevcut = await redis.get(SURUM_ANAHTARI);
+  if (mevcut === String(surum)) return { degisti: false, silinen: 0 };
+
+  let silinen = 0;
+  for await (const k of redis.scanIterator({ MATCH: 'menu:*', COUNT: 100 })) {
+    silinen += await redis.del(k);
+  }
+  await redis.set(SURUM_ANAHTARI, String(surum));
+  return { degisti: true, silinen };
+}
+
+module.exports = { anahtar, getir, yaz, sil, surumuUygula };

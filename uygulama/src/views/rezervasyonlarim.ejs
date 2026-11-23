@@ -25,7 +25,8 @@
         <div><strong><%= r.yemekhane %></strong> · <%= r.ogun %></div>
         <p class="kart-bilgi">
           <%= r.tarihAdi %>
-          <% if (r.sonSaat) { %>· Son saat: <%= r.sonSaat %><% } %>
+         <% if (r.sonSaat) { %>· Son saat: <%= r.sonSaat %><% } %>
+          · <%= r.porsiyon === 'yarim' ? 'Yarım porsiyon' : 'Tam porsiyon' %>
         </p>
 
         <% if (r.durum === 'aktif') { %>

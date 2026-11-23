@@ -2,37 +2,24 @@ const menuRepository = require('../repositories/menuRepository');
 const rezervasyonRepository = require('../repositories/rezervasyonRepository');
 const bakiyeRepository = require('../repositories/bakiyeRepository');
 const { kullaniciMesaji } = require('../utils/dbHata');
+const { gecerliTarih, gunEkle, gunAdi } = require('../utils/tarih');
 
 const DURUM_ETIKETLERI = { aktif: 'Rezervasyonunuz var', kullanildi: 'Kullanıldı' };
 
-function gecerliTarih(s) {
-  return /^\d{4}-\d{2}-\d{2}$/.test(s || '') && !isNaN(new Date(s + 'T00:00:00Z'));
-}
-
-function gunEkle(tarih, gun) {
-  const d = new Date(tarih + 'T00:00:00Z');
-  d.setUTCDate(d.getUTCDate() + gun);
-  return d.toISOString().slice(0, 10);
-}
-
-function gunAdi(tarih) {
-  return new Date(tarih + 'T00:00:00Z').toLocaleDateString('tr-TR', {
-    weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC',
-  });
-}
-
 // Students pay the student price; staff and admins pay the staff price
-function fiyat(rol, menu) {
-  return rol === 'ogrenci' ? menu.ogrenci_fiyati : menu.personel_fiyati;
+function fiyatlar(rol, menu) {
+  return rol === 'ogrenci'
+    ? { tam: menu.ogrenci_fiyati, yarim: menu.ogrenci_yarim_fiyati }
+    : { tam: menu.personel_fiyati, yarim: menu.personel_yarim_fiyati };
 }
 
 async function sayfaHazirla(kullanici, istenenBaslangic, yeniMenuId) {
   const baslangic = gecerliTarih(istenenBaslangic) ? istenenBaslangic : await menuRepository.bugun();
   const bitis = gunEkle(baslangic, 6);
 
-  const menuler = await menuRepository.haftalik(baslangic, bitis);                   // replica
+  const menuler = await menuRepository.haftalik(baslangic, bitis);                       // replica
   const durumlar = await rezervasyonRepository.durumlar(kullanici.id, baslangic, bitis); // replica
-  const bakiye = await bakiyeRepository.guncelBakiye(kullanici.id);                  // PRIMARY
+  const bakiye = await bakiyeRepository.guncelBakiye(kullanici.id);                      // PRIMARY
 
   const durumHaritasi = new Map(durumlar.map((d) => [d.menu_id, d.durum]));
 
@@ -48,9 +35,12 @@ async function sayfaHazirla(kullanici, istenenBaslangic, yeniMenuId) {
     // The replica may be a moment behind: trust the reservation we just made
     if (yeniMenuId && m.menu_id === yeniMenuId) durum = 'aktif';
 
+    const f = fiyatlar(kullanici.rol, m);
     gun.menuler.push({
       ...m,
-      fiyat: fiyat(kullanici.rol, m),
+      fiyat: f.tam,
+      yarimFiyat: f.yarim,
+      yarimVar: Number(m.yarim_porsiyon_var) === 1,
       sonSaat: m.rezervasyon_son ? m.rezervasyon_son.slice(11, 16) : null,
       durumEtiketi: DURUM_ETIKETLERI[durum] || null,
     });
@@ -73,10 +63,13 @@ async function yap(req, res, next) {
   try {
     const menuId = parseInt(req.body.menu_id, 10);
     const baslangic = gecerliTarih(req.body.baslangic) ? req.body.baslangic : null;
+    // Breakfast cards send no choice, so it defaults to a full portion.
+    // The procedure validates the value and rejects half portions at breakfast.
+    const porsiyon = req.body.porsiyon || 'tam';
     if (!Number.isInteger(menuId) || menuId < 1) return res.redirect('/menu/hafta');
 
     try {
-      await rezervasyonRepository.yap(req.kullanici.id, menuId);
+      await rezervasyonRepository.yap(req.kullanici.id, menuId, porsiyon);
     } catch (err) {
       const mesaj = kullaniciMesaji(err); // the procedure's Turkish message
       if (!mesaj) throw err;

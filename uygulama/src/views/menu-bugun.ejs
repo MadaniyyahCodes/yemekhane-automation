@@ -34,21 +34,30 @@
       <button type="submit">Göster</button>
     </form>
 
+    <% if (!alerjenSecili) { %>
+      <p class="kart-bilgi">Alerjen uyarıları için <a href="/profil">profilinizden</a> alerjenlerinizi seçin.</p>
+    <% } %>
+
     <% if (!menu) { %>
       <p>Bu yemekhane ve öğün için menü yok.</p>
     <% } else { %>
       <h2><%= menu.yemekhane %> · <%= menu.ogun %></h2>
       <% if (menu.sonSaat) { %><p>Rezervasyon son saati: <strong><%= menu.sonSaat %></strong></p><% } %>
 
+      <% if (menu.uyariSayisi > 0) { %>
+        <p class="uyari-kutu">⚠ Bu menüde alerjenlerinizi içeren <%= menu.uyariSayisi %> yemek var.</p>
+      <% } %>
+
       <% menu.kategoriler.forEach(function (kat) { %>
         <h3><%= kat.ad %></h3>
         <ul class="yemekler">
           <% kat.yemekler.forEach(function (y) { %>
-            <li>
+            <li class="<%= y.uyari.length > 0 ? 'uyarili' : '' %>">
               <span class="yemek-ad"><%= y.yemek %></span>
               <% if (y.kalori !== null) { %><span class="kalori"><%= y.kalori %> kcal</span><% } %>
               <% if (y.vejetaryen) { %><span class="etiket vej">Vejetaryen</span><% } %>
               <% if (y.alerjenler) { %><span class="etiket alerjen">Alerjen: <%= y.alerjenler %></span><% } %>
+              <% if (y.uyari.length > 0) { %><span class="etiket uyari">⚠ Alerjen uyarısı: <%= y.uyari.join(', ') %></span><% } %>
             </li>
           <% }); %>
         </ul>

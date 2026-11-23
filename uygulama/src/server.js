@@ -2,12 +2,14 @@ const path = require('path');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const { oturumYukle } = require('./middleware/oturum');
+const menuService = require('./services/menuService');
 const authRoutes = require('./routes/authRoutes');
 const anasayfaRoutes = require('./routes/anasayfaRoutes');
 const bakiyeRoutes = require('./routes/bakiyeRoutes');
 const menuRoutes = require('./routes/menuRoutes');
 const rezervasyonRoutes = require('./routes/rezervasyonRoutes');
 const degerlendirmeRoutes = require('./routes/degerlendirmeRoutes');
+const profilRoutes = require('./routes/profilRoutes');
 const yoneticiRoutes = require('./routes/yoneticiRoutes');
 const sistemRoutes = require('./routes/sistemRoutes');
 
@@ -26,6 +28,7 @@ app.use('/', bakiyeRoutes);
 app.use('/', menuRoutes);
 app.use('/', rezervasyonRoutes);
 app.use('/', degerlendirmeRoutes);
+app.use('/', profilRoutes);
 app.use('/', yoneticiRoutes);
 app.use('/', sistemRoutes);
 
@@ -33,6 +36,11 @@ app.use('/', sistemRoutes);
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).send('Sunucu hatası');
+});
+
+// Removes old-structure menu records from Redis when the cache version changed
+menuService.onbellekSurumunuUygula().catch((err) => {
+  console.error('Onbellek temizligi yapilamadi:', err.message);
 });
 
 app.listen(8000, '0.0.0.0', () => {

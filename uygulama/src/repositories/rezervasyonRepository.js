@@ -16,7 +16,7 @@ async function durumlar(kullaniciId, baslangic, bitis) {
 async function kullanicininTumu(kullaniciId, kaynaktanOku) {
   const havuz = kaynaktanOku ? yazma : okuma;
   const [satirlar] = await havuz.query(
-    'SELECT r.id, r.durum, d.menu_id, d.tarih, d.yemekhane, d.ogun, d.rezervasyon_son, ' +
+    'SELECT r.id, r.durum, r.porsiyon, d.menu_id, d.tarih, d.yemekhane, d.ogun, d.rezervasyon_son, ' +
     '       (d.rezervasyon_son < NOW()) AS suresi_doldu ' +
     'FROM rezervasyonlar r JOIN v_menu_doluluk d ON d.menu_id = r.menu_id ' +
     'WHERE r.kullanici_id = ? ' +
@@ -27,9 +27,9 @@ async function kullanicininTumu(kullaniciId, kaynaktanOku) {
 }
 
 // Making a reservation moves money, so the stored procedure does it (WRITE: PRIMARY)
-async function yap(kullaniciId, menuId) {
-  const [sonuc] = await yazma.query('CALL sp_rezervasyon_yap(?, ?)', [kullaniciId, menuId]);
-  return sonuc[0][0]; // { rezervasyon_id, ucret, bakiye }
+async function yap(kullaniciId, menuId, porsiyon = 'tam') {
+  const [sonuc] = await yazma.query('CALL sp_rezervasyon_yap(?, ?, ?)', [kullaniciId, menuId, porsiyon]);
+  return sonuc[0][0]; // { rezervasyon_id, ucret, bakiye, porsiyon }
 }
 
 // Cancelling refunds money, so the stored procedure does it too (WRITE: PRIMARY)

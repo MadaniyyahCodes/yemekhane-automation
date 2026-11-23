@@ -31,8 +31,11 @@
         <article class="kart">
           <div><strong><%= m.yemekhane %></strong> · <%= m.ogun %></div>
           <p class="kart-bilgi">
-            Fiyat: <strong><%= Number(m.fiyat).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) %> TL</strong>
-            · Boş yer: <strong><%= m.bos_yer %></strong> / <%= m.kapasite %>
+            Tam porsiyon: <strong><%= Number(m.fiyat).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) %> TL</strong>
+            <% if (m.yarimVar) { %>· Yarım porsiyon: <strong><%= Number(m.yarimFiyat).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) %> TL</strong><% } %>
+          </p>
+          <p class="kart-bilgi">
+            Boş yer: <strong><%= m.bos_yer %></strong> / <%= m.kapasite %>
             <% if (m.sonSaat) { %>· Son saat: <%= m.sonSaat %><% } %>
           </p>
           <p class="kart-bilgi">
@@ -49,6 +52,10 @@
             <form method="post" action="/rezervasyon/yap">
               <input type="hidden" name="menu_id" value="<%= m.menu_id %>">
               <input type="hidden" name="baslangic" value="<%= baslangic %>">
+              <% if (m.yarimVar) { %>
+                <label class="onay"><input type="radio" name="porsiyon" value="tam" checked> Tam porsiyon</label>
+                <label class="onay"><input type="radio" name="porsiyon" value="yarim"> Yarım porsiyon</label>
+              <% } %>
               <button type="submit">Rezervasyon yap</button>
             </form>
           <% } %>
